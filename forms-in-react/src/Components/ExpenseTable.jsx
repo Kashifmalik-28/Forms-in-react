@@ -8,11 +8,11 @@ function ExpenseTable({ expenses }) {
             <th>
               <select>
                 <option value="">All</option>
-                <option value="grocery">Grocery</option>
-                <option value="clothes">Clothes</option>
-                <option value="bills">Bills</option>
-                <option value="education">Education</option>
-                <option value="medicine">Medicine</option>
+                <option value="Grocery">Grocery</option>
+                <option value="Clothes">Clothes</option>
+                <option value="Bills">Bills</option>
+                <option value="Education">Education</option>
+                <option value="Medicine">Medicine</option>
               </select>
             </th>
             <th className="amount-column">
