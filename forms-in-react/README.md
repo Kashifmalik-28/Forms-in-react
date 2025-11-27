@@ -9,3 +9,5 @@
 ## Conclusion of These Three Videos : **I Personally Like \_\_\_\_useRef() hook to update Any component using Form But Sir Personally Like Controlled Components Concept using \_\_\_\_useState() function.**
 
 ## Video_No_36 : Form Validation : **In this Video I implement a form Validation But code is too Long \_\_\_\_so For This Reason Next We create a custom form hook to Implement functionally with reusable code.**
+
+## Video_No_36 Create Custom form Fields & Advance Form Validation: **In this Video I Learn First: \_\_\_I learn The Concept of forwardRef() and How we create Different Components when adding Inputs\_\_\_Second: Form Validation for all rules Jitny bhe input fields man add krun \_\_\_Third: For Pattern Validation use regex**

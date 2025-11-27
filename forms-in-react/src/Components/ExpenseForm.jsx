@@ -1,4 +1,6 @@
 import { useRef, useState } from 'react'
+import Input from './Input'
+import Select from './Select'
 
 function ExpenseForm({ setExpenses }) {
   const titleRef = useRef(null)
@@ -6,25 +8,57 @@ function ExpenseForm({ setExpenses }) {
   const amountRef = useRef(null)
   const [error, setError] = useState({})
 
+  const validationConfig = {
+    title: [
+      { required: true, message: 'Title is required' },
+      { minLength: 5, message: 'Title must be at least 5 characters long' },
+    ],
+    category: [
+      { required: true, message: 'Category is required' }
+    ],
+    amount: [
+      { required: true, message: 'Amount is required' },
+      { pattern: /^[0-9]+(\.[0-9]{1,2})?$/, message: 'Please enter a valid amount' }
+    ],
+  }
+
   const Validate = (formsData) => {
-    // 🔥 Implement form validation
     const errorsData = {}
-    if (!formsData.title) {
-      errorsData.title = 'Title is required'
-      
-    }
-    if (!formsData.category) {
-      errorsData.category = 'Category is required'
-    }
-    if (!formsData.amount) {
-      errorsData.amount = 'Amount is required'
-    }
+    
+    // Loop through each field in validationConfig
+    Object.entries(validationConfig).forEach(([key, rules]) => {
+      // Loop through each rule for the field
+      rules.forEach((rule) => {
+        // Skip if error already exists for this field
+        if (errorsData[key]) return
+        
+        // Check required validation
+        if (rule.required && !formsData[key]) {
+          errorsData[key] = rule.message
+          return
+        }
+        
+        // Check minLength validation
+        if (rule.minLength && formsData[key] && formsData[key].length < rule.minLength) {
+          errorsData[key] = rule.message
+          return
+        }
+        
+        // Check pattern validation (for amount)
+        if (rule.pattern && formsData[key] && !rule.pattern.test(formsData[key])) {
+          errorsData[key] = rule.message
+          return
+        }
+      })
+    })
+    
     setError(errorsData)
     return errorsData
   }
 
   // ✅ Clear specific field error when user types
-  const handleInputChange = (fieldName) => {
+  const handleInputChange = (e) => {
+    const fieldName = e.target.name
     setError((prevErrors) => {
       const newErrors = { ...prevErrors }
       delete newErrors[fieldName]
@@ -34,14 +68,15 @@ function ExpenseForm({ setExpenses }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // ✅ FIXED: Get values from refs first
+    
+    // ✅ Get values from refs first
     const formsData = {
       title: titleRef.current.value,
       category: categoryRef.current.value,
       amount: amountRef.current.value,
     }
 
-    // Now validate with the actual form data
+    // Validate form data
     const validateResult = Validate(formsData)
 
     if (Object.keys(validateResult).length > 0) {
@@ -65,48 +100,42 @@ function ExpenseForm({ setExpenses }) {
 
   return (
     <form className="expense-form" onSubmit={handleSubmit}>
-      <div className="input-container">
-        <label htmlFor="title">Title</label>
-        <input
-          id="title"
-          name="title"
-          ref={titleRef}
-          onChange={() => handleInputChange('title')}
-        />
-        {error.title && <span className="error">{error.title}</span>}
-      </div>
+      <Input
+        label="Title"
+        name="title"
+        id="title"
+        ref={titleRef}
+        onChange={handleInputChange}
+        error={error.title}
+      />
 
-      <div className="input-container">
-        <label htmlFor="category">Category</label>
-        <select
-          id="category"
-          ref={categoryRef}
-          onChange={() => handleInputChange('category')}
-        >
-          <option value="" hidden>
-            Select Category
-          </option>
-          <option value="grocery">Grocery</option>
-          <option value="clothes">Clothes</option>
-          <option value="bills">Bills</option>
-          <option value="education">Education</option>
-          <option value="medicine">Medicine</option>
-        </select>
-        {error.category && <span className="error">{error.category}</span>}
-      </div>
+      <Select
+        label="Category"
+        name="category"
+        id="category"
+        ref={categoryRef}
+        onChange={handleInputChange}
+        error={error.category}
+        options={[
+          { value: '', label: 'Select Category', hidden: true },
+          { value: 'grocery', label: 'Grocery' },
+          { value: 'clothes', label: 'Clothes' },
+          { value: 'bills', label: 'Bills' },
+          { value: 'education', label: 'Education' },
+          { value: 'medicine', label: 'Medicine' },
+        ]}
+      />
 
-      <div className="input-container">
-        <label htmlFor="amount">Amount</label>
-        <input
-          id="amount"
-          name="amount"
-          type="number"
-          ref={amountRef}
-          onChange={() => handleInputChange('amount')}
-        />
-        {error.amount && <span className="error">{error.amount}</span>}
-      </div>
-
+      <Input
+        label="Amount"
+        name="amount"
+        id="amount"
+        type="number"
+        ref={amountRef}
+        onChange={handleInputChange}
+        error={error.amount}
+      />
+      
       <button className="add-btn">Add</button>
     </form>
   )
