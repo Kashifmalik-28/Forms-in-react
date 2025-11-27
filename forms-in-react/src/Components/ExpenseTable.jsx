@@ -1,4 +1,17 @@
+import { useMemo } from 'react'
+import useFilter from '../../hooks/useFilter'
+
 function ExpenseTable({ expenses }) {
+  const [filteredData, setQuery] = useFilter(expenses, (data) => data.category)
+
+  // ✅ Optimized: Only recalculates when filteredData changes
+  const total = useMemo(() => {
+    return filteredData.reduce(
+      (acc, curr) => acc + parseFloat(curr.amount || 0),
+      0
+    )
+  }, [filteredData])
+
   return (
     <>
       <table className="expense-table">
@@ -6,13 +19,13 @@ function ExpenseTable({ expenses }) {
           <tr>
             <th>Title</th>
             <th>
-              <select>
+              <select onChange={(e) => setQuery(e.target.value.toLowerCase())}>
                 <option value="">All</option>
-                <option value="Grocery">Grocery</option>
-                <option value="Clothes">Clothes</option>
-                <option value="Bills">Bills</option>
-                <option value="Education">Education</option>
-                <option value="Medicine">Medicine</option>
+                <option value="grocery">Grocery</option>
+                <option value="clothes">Clothes</option>
+                <option value="bills">Bills</option>
+                <option value="education">Education</option>
+                <option value="medicine">Medicine</option>
               </select>
             </th>
             <th className="amount-column">
@@ -41,17 +54,17 @@ function ExpenseTable({ expenses }) {
           </tr>
         </thead>
         <tbody>
-          {expenses.map(({ id, title, category, amount }) => (
+          {filteredData.map(({ id, title, category, amount }) => (
             <tr key={id}>
               <td>{title}</td>
               <td>{category}</td>
-              <td>{amount}</td>
+              <td>₹{parseFloat(amount).toFixed(2)}</td>
             </tr>
           ))}
           <tr>
             <th>Total</th>
             <th></th>
-            <th>8100</th>
+            <th>₹{total.toFixed(2)}</th>
           </tr>
         </tbody>
       </table>
