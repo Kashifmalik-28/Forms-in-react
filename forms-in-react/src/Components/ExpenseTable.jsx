@@ -1,9 +1,10 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import useFilter from '../../hooks/useFilter'
-
-function ExpenseTable({ expenses }) {
+import ContextMenu from './ContextMenu'
+function ExpenseTable({ expenses, setExpenses }) {
   const [filteredData, setQuery] = useFilter(expenses, (data) => data.category)
-
+  const [menuPosition, setMenuPosition] = useState({})
+  const [rowId, setRowId] = useState('')
   // ✅ Optimized: Only recalculates when filteredData changes
   const total = useMemo(() => {
     return filteredData.reduce(
@@ -14,7 +15,13 @@ function ExpenseTable({ expenses }) {
 
   return (
     <>
-      <table className="expense-table">
+      <ContextMenu
+        menuPosition={menuPosition}
+        setMenuPosition={setMenuPosition}
+        setExpenses={setExpenses}
+        rowId={rowId}
+      />
+      <table className="expense-table" onClick={(e) => setMenuPosition({})}>
         <thead>
           <tr>
             <th>Title</th>
@@ -55,7 +62,14 @@ function ExpenseTable({ expenses }) {
         </thead>
         <tbody>
           {filteredData.map(({ id, title, category, amount }) => (
-            <tr key={id}>
+            <tr
+              key={id}
+              onContextMenu={(e) => {
+                e.preventDefault()
+                setMenuPosition({ left: e.clientX, top: e.clientY })
+                setRowId(id)
+              }}
+            >
               <td>{title}</td>
               <td>{category}</td>
               <td>₹{parseFloat(amount).toFixed(2)}</td>
