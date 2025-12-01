@@ -1,12 +1,21 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Input from './Input'
 import Select from './Select'
 
-function ExpenseForm({ setExpenses }) {
+function ExpenseForm({ setExpenses, expenseToEdit, setExpenseToEdit }) {
   const titleRef = useRef(null)
   const categoryRef = useRef(null)
   const amountRef = useRef(null)
   const [error, setError] = useState({})
+
+  // ✅ Populate form when editing
+  useEffect(() => {
+    if (expenseToEdit) {
+      titleRef.current.value = expenseToEdit.title
+      categoryRef.current.value = expenseToEdit.category
+      amountRef.current.value = expenseToEdit.amount
+    }
+  }, [expenseToEdit])
 
   const validationConfig = {
     title: [
@@ -25,26 +34,20 @@ function ExpenseForm({ setExpenses }) {
   const Validate = (formsData) => {
     const errorsData = {}
     
-    // Loop through each field in validationConfig
     Object.entries(validationConfig).forEach(([key, rules]) => {
-      // Loop through each rule for the field
       rules.forEach((rule) => {
-        // Skip if error already exists for this field
         if (errorsData[key]) return
         
-        // Check required validation
         if (rule.required && !formsData[key]) {
           errorsData[key] = rule.message
           return
         }
         
-        // Check minLength validation
         if (rule.minLength && formsData[key] && formsData[key].length < rule.minLength) {
           errorsData[key] = rule.message
           return
         }
         
-        // Check pattern validation (for amount)
         if (rule.pattern && formsData[key] && !rule.pattern.test(formsData[key])) {
           errorsData[key] = rule.message
           return
@@ -56,7 +59,6 @@ function ExpenseForm({ setExpenses }) {
     return errorsData
   }
 
-  // ✅ Clear specific field error when user types
   const handleInputChange = (e) => {
     const fieldName = e.target.name
     setError((prevErrors) => {
@@ -69,29 +71,47 @@ function ExpenseForm({ setExpenses }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     
-    // ✅ Get values from refs first
     const formsData = {
       title: titleRef.current.value,
       category: categoryRef.current.value,
       amount: amountRef.current.value,
     }
 
-    // Validate form data
     const validateResult = Validate(formsData)
 
     if (Object.keys(validateResult).length > 0) {
       return
     }
 
-    const newExpense = {
-      ...formsData,
-      id: crypto.randomUUID(),
+    if (expenseToEdit) {
+      // ✅ Update existing expense
+      setExpenses((prevState) =>
+        prevState.map((expense) =>
+          expense.id === expenseToEdit.id
+            ? { ...formsData, id: expense.id }
+            : expense
+        )
+      )
+      setExpenseToEdit(null) // Clear edit mode
+    } else {
+      // ✅ Add new expense
+      const newExpense = {
+        ...formsData,
+        id: crypto.randomUUID(),
+      }
+      setExpenses((prevState) => [...prevState, newExpense])
     }
 
-    // 🔥 Add new expense to table
-    setExpenses((prevState) => [...prevState, newExpense])
+    // Clear form
+    titleRef.current.value = ''
+    categoryRef.current.value = ''
+    amountRef.current.value = ''
+    setError({})
+  }
 
-    // 🔄 Clear input fields and errors
+  // ✅ Cancel edit mode
+  const handleCancel = () => {
+    setExpenseToEdit(null)
     titleRef.current.value = ''
     categoryRef.current.value = ''
     amountRef.current.value = ''
@@ -136,7 +156,19 @@ function ExpenseForm({ setExpenses }) {
         error={error.amount}
       />
       
-      <button className="add-btn">Add</button>
+      <button className="add-btn" type="submit">
+        {expenseToEdit ? 'Update' : 'Add'} {/* ✅ Dynamic button text */}
+      </button>
+      
+      {expenseToEdit && (
+        <button 
+          type="button" 
+          className="cancel-btn" 
+          onClick={handleCancel}
+        >
+          Cancel
+        </button>
+      )}
     </form>
   )
 }

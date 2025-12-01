@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
 import useFilter from '../../hooks/useFilter'
 import ContextMenu from './ContextMenu'
-function ExpenseTable({ expenses, setExpenses }) {
+
+function ExpenseTable({ expenses, setExpenses, setExpenseToEdit }) {
   const [filteredData, setQuery] = useFilter(expenses, (data) => data.category)
   const [menuPosition, setMenuPosition] = useState({})
   const [rowId, setRowId] = useState('')
-  // ✅ Optimized: Only recalculates when filteredData changes
+
   const total = useMemo(() => {
     return filteredData.reduce(
       (acc, curr) => acc + parseFloat(curr.amount || 0),
@@ -19,6 +20,8 @@ function ExpenseTable({ expenses, setExpenses }) {
         menuPosition={menuPosition}
         setMenuPosition={setMenuPosition}
         setExpenses={setExpenses}
+        setExpenseToEdit={setExpenseToEdit} // ✅ Pass down
+        expenses={expenses} // ✅ Pass expenses
         rowId={rowId}
       />
       <table className="expense-table" onClick={(e) => setMenuPosition({})}>

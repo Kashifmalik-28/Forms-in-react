@@ -1,11 +1,14 @@
-function ContextMenu({ menuPosition, setMenuPosition, setExpenses, rowId }) {
+function ContextMenu({ menuPosition, setMenuPosition, setExpenses, setExpenseToEdit, expenses, rowId }) {
   if (!menuPosition.left) return
+  
   return (
     <>
       <div className="context-menu" style={{ ...menuPosition }}>
         <div
           onClick={() => {
-            console.log('Editing')
+            // ✅ Find the expense and set it for editing
+            const expenseToEdit = expenses.find((expense) => expense.id === rowId)
+            setExpenseToEdit(expenseToEdit)
             setMenuPosition({})
           }}
         >
