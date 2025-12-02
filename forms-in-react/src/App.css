@@ -48,6 +48,10 @@ main {
   display: flex;
 }
 
+.title-column div {
+  display: flex;
+}
+
 .amount-column span {
   margin-right: 6px;
 }

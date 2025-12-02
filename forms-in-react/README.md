@@ -17,3 +17,8 @@
 ## Video_No_39 ( Create Custom Context Menu & Implement Delete Functionality) **Most IMP Advise For Me: \_\_\_ Kindly make Sure How Code Is Works**
 
 ## Video_No_40 **( add Edit Functionality using Claude I because i am using useRef() not sir Anurag Method)**
+
+## Video_No_41,42
+
+**I implemented sorting functionality ascending & descending order In Video#41 using claude**
+**In video_42 I create local storage custom hook and push my data in local storage using this hook.**

@@ -3,10 +3,12 @@ import './App.css'
 import ExpenseForm from './Components/ExpenseForm'
 import ExpenseTable from './Components/ExpenseTable'
 import expenseData from './expenseData'
+import useLocalStorage from './hooks/useLocalStorage'
 
 function App() {
-  const [expenses, setExpenses] = useState(expenseData)
-  const [expenseToEdit, setExpenseToEdit] = useState(null) // ✅ New state
+  // ✅ useState ki jagah useLocalStorage use karein
+  const [expenses, setExpenses] = useLocalStorage('expenses', expenseData)
+  const [expenseToEdit, setExpenseToEdit] = useState(null)
 
   return (
     <>
